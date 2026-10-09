@@ -77,11 +77,11 @@ The API provides sample user records for testing and learning purposes. No API k
 ### 1. Clone the repository
 
 ```bash
-git clone <your-github-repository-url>
+git clone <github-repository-url>
 cd api_data_project
 ```
 
-Replace `<your-github-repository-url>` with your actual GitHub repository URL.
+Replace `<github-repository-url>` with actual GitHub repository URL.
 
 ### 2. Create a virtual environment
 
