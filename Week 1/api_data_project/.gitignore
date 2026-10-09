@@ -1,0 +1,12 @@
+
+# Virtual environment
+apienv/
+venv/
+.venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Log files
+*.log

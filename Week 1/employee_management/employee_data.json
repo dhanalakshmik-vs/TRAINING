@@ -1,0 +1,42 @@
+[
+    {
+        "id": "EMP002",
+        "name": "Rahul",
+        "age": 30,
+        "department": "Accounts",
+        "salary": 32000.0,
+        "email": "rahul2@gmail.com"
+    },
+    {
+        "id": "EMP001",
+        "name": "Sreekutty",
+        "age": 21,
+        "department": "IT",
+        "salary": 20000.0,
+        "email": "sreekutty@gmail.com"
+    },
+    {
+        "id": "EMP003",
+        "name": "Swathi",
+        "age": 28,
+        "department": "HR",
+        "salary": 28000.0,
+        "email": "swathi@gmail.com"
+    },
+    {
+        "id": "EMP004",
+        "name": "Anu",
+        "age": 25,
+        "department": "IT",
+        "salary": 29000.0,
+        "email": "anu23@gmail.com"
+    },
+    {
+        "id": "EMP005",
+        "name": "Praveena",
+        "age": 24,
+        "email": "praveena24@gmail.com",
+        "department": "IT",
+        "salary": 25000.0
+    }
+]
