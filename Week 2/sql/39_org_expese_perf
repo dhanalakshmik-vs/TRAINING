@@ -1,0 +1,106 @@
+CREATE DATABASE org_expenses_perf
+ TEMPLATE org_expenses;
+
+\c org_expenses_perf
+
+SELECT COUNT(*) AS initial_expense_count
+FROM organization.expenses;
+
+SELECT
+    conname AS constraint_name,
+    contype AS constraint_type,
+    pg_get_constraintdef(oid) AS definition
+FROM pg_constraint
+WHERE conrelid = 'organization.expenses'::regclass
+ORDER BY contype, conname;
+
+SELECT
+    column_name,
+    data_type,
+    is_nullable,
+    column_default,
+    is_identity,
+    identity_generation
+FROM information_schema.columns
+WHERE table_schema = 'organization'
+  AND table_name = 'expenses'
+
+SELECT employee_id, full_name
+FROM organization.employees
+ORDER BY employee_id;
+
+
+SELECT category_id, name
+FROM organization.categories
+ORDER BY category_id;
+
+DROP INDEX IF EXISTS organization.idx_expenses_employee_occurred;
+
+ WITH generated AS (
+    SELECT n
+    FROM generate_series(1, 50000) AS series(n)
+),
+ranked_employees AS (
+    SELECT
+        employee_id,
+        ROW_NUMBER() OVER (ORDER BY employee_id) AS rn
+    FROM organization.employees
+),
+ranked_categories AS (
+    SELECT
+        category_id,
+        ROW_NUMBER() OVER (ORDER BY category_id) AS rn
+    FROM organization.categories
+)
+INSERT INTO organization.expenses (
+    employee_id,
+    category_id,
+    amount,
+    occurred_on,
+    description,
+    status,
+    receipt_reference
+)
+SELECT
+    e.employee_id,
+    c.category_id,
+    (100 + (g.n % 49000) / 10.0)::numeric,
+    DATE '2023-01-01' + ((g.n - 1) % 1460),
+    'Performance test expense ' || g.n,
+    CASE g.n % 4
+        WHEN 0 THEN 'draft'
+        WHEN 1 THEN 'submitted'
+        WHEN 2 THEN 'approved'
+        ELSE 'rejected'
+    END,
+    'PERF-' || g.n
+FROM generated AS g
+JOIN ranked_employees AS e
+    ON e.rn = ((g.n - 1) % 13) + 1
+JOIN ranked_categories AS c
+    ON c.rn = ((g.n - 1) % 5) + 1;
+
+SELECT COUNT(*) AS generated_expenses
+FROM organization.expenses
+WHERE description LIKE 'Performance test expense %';
+
+ANALYZE organization.expenses;
+
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT expense_id, amount, occurred_on
+FROM organization.expenses
+WHERE employee_id = 7
+  AND occurred_on >= DATE '2024-01-01'
+  AND occurred_on < DATE '2024-02-01';
+
+CREATE INDEX idx_expenses_employee_occurred
+ON organization.expenses (employee_id, occurred_on);
+
+ANALYZE organization.expenses;
+
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT expense_id, amount, occurred_on
+FROM organization.expenses
+WHERE employee_id = 7
+  AND occurred_on >= DATE '2024-01-01'
+  AND occurred_on < DATE '2024-02-01';
