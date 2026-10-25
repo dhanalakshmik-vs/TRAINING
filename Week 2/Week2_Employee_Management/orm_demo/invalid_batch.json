@@ -1,0 +1,19 @@
+
+[
+    {
+        "id": "EMP201",
+        "name": "Test Rollback",
+        "age": 30,
+        "department": "IT",
+        "salary": 35000.00,
+        "email": "rollback201@example.com"
+    },
+    {
+        "id": "EMP202",
+        "name": "Invalid Employee",
+        "age": 15,
+        "department": "HR",
+        "salary": 28000.00,
+        "email": "invalid202@example.com"
+    }
+]
