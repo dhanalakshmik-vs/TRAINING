@@ -1,16 +1,20 @@
 
+"""Display all employees and search employees by name."""
+
 from getpass import getpass
 
 from sqlalchemy import URL, create_engine, select
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, joinedload
 
 from employee_management.models import Employee
 
 
-def main():
-    password = getpass("Enter PostgreSQL password: ")
+def main() -> None:
+    """Connect to PostgreSQL, list employees, and search by name."""
+    password: str = getpass("Enter PostgreSQL password: ")
 
-    database_url = URL.create(
+    database_url: URL = URL.create(
         drivername="postgresql+psycopg",
         username="postgres",
         password=password,
@@ -19,17 +23,19 @@ def main():
         database="employee_orm_demo",
     )
 
-    engine = create_engine(database_url)
+    engine: Engine = create_engine(database_url)
 
     try:
         with Session(engine) as session:
             print("\n--- All Employees ---")
 
-            statement = select(Employee).options(
-                joinedload(Employee.department)
-            ).order_by(Employee.employee_id)
+            statement = (
+                select(Employee)
+                .options(joinedload(Employee.department))
+                .order_by(Employee.employee_id)
+            )
 
-            employees = session.scalars(statement).all()
+            employees: list[Employee] = session.scalars(statement).all()
 
             for employee in employees:
                 print(
@@ -40,15 +46,17 @@ def main():
                     f"{employee.department.name}"
                 )
 
-            search_name = input(
+            search_name: str = input(
                 "\nEnter employee name to search: "
             ).strip()
 
-            statement = select(Employee).where(
-                Employee.name.ilike(f"%{search_name}%")
-            ).options(joinedload(Employee.department))
+            statement = (
+                select(Employee)
+                .where(Employee.name.ilike(f"%{search_name}%"))
+                .options(joinedload(Employee.department))
+            )
 
-            results = session.scalars(statement).all()
+            results: list[Employee] = session.scalars(statement).all()
 
             print("\n--- Search Results ---")
 

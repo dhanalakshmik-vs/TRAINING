@@ -1,15 +1,19 @@
 
+"""Check the PostgreSQL connection and create ORM tables."""
+
 from getpass import getpass
 
 from sqlalchemy import URL, create_engine, text
+from sqlalchemy.engine import Engine
 
 from employee_management.models import Base
 
 
-def main():
-    password = getpass("Enter PostgreSQL password: ")
+def main() -> None:
+    """Connect to PostgreSQL and create employee management tables."""
+    password: str = getpass("Enter PostgreSQL password: ")
 
-    database_url = URL.create(
+    database_url: URL = URL.create(
         drivername="postgresql+psycopg",
         username="postgres",
         password=password,
@@ -18,7 +22,7 @@ def main():
         database="employee_orm_demo",
     )
 
-    engine = create_engine(database_url)
+    engine: Engine = create_engine(database_url)
 
     try:
         with engine.connect() as connection:

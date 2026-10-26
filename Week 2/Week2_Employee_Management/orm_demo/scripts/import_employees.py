@@ -6,18 +6,21 @@ import sys
 from decimal import Decimal, InvalidOperation
 from getpass import getpass
 from pathlib import Path
+from typing import Any
 
 from sqlalchemy import URL, create_engine, select
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
 from employee_management.models import Department, Employee
 
 
-JSON_FILE = Path(__file__).resolve().parent.parent / "employee.json"
+JSON_FILE: Path = Path(__file__).resolve().parent.parent / "employee.json"
 
 
-def get_database_url():
-    password = getpass("Enter PostgreSQL password: ")
+def get_database_url() -> URL:
+    """Prompt for the PostgreSQL password and build the database URL."""
+    password: str = getpass("Enter PostgreSQL password: ")
 
     return URL.create(
         drivername="postgresql+psycopg",
@@ -29,23 +32,25 @@ def get_database_url():
     )
 
 
-def validate_employee(record, row_number):
-    """Validate and convert one JSON record."""
-
+def validate_employee(
+    record: Any,
+    row_number: int,
+) -> dict[str, str | int | Decimal]:
+    """Validate a JSON employee record and convert it to ORM-ready data."""
     if not isinstance(record, dict):
         raise ValueError(f"Record {row_number} must be a JSON object.")
 
-    required = {"id", "name", "age", "department", "salary"}
+    required: set[str] = {"id", "name", "age", "department", "salary"}
 
-    missing = required - record.keys()
+    missing: set[str] = required - record.keys()
     if missing:
         raise ValueError(
             f"Record {row_number} is missing: {', '.join(sorted(missing))}"
         )
 
-    employee_id = record["id"]
-    name = record["name"]
-    department_name = record["department"]
+    employee_id: Any = record["id"]
+    name: Any = record["name"]
+    department_name: Any = record["department"]
 
     if (
         not isinstance(employee_id, str)
@@ -63,15 +68,17 @@ def validate_employee(record, row_number):
     ):
         raise ValueError(f"Record {row_number} has an invalid department.")
 
-    age = record["age"]
+    age: Any = record["age"]
     if isinstance(age, bool) or not isinstance(age, int):
         raise ValueError(f"Record {row_number} age must be an integer.")
 
     if not 20 <= age <= 60:
-        raise ValueError(f"Record {row_number} age must be between 20 and 60.")
+        raise ValueError(
+            f"Record {row_number} age must be between 20 and 60."
+        )
 
     try:
-        salary = Decimal(str(record["salary"]))
+        salary: Decimal = Decimal(str(record["salary"]))
     except (InvalidOperation, ValueError, TypeError) as error:
         raise ValueError(
             f"Record {row_number} has an invalid salary."
@@ -96,19 +103,19 @@ def validate_employee(record, row_number):
     }
 
 
-def import_employees(engine, json_file):
+def import_employees(engine: Engine, json_file: Path) -> None:
+    """Import validated employees in one transaction, skipping existing IDs."""
     with json_file.open("r", encoding="utf-8") as file:
-        records = json.load(file)
+        records: Any = json.load(file)
 
     if not isinstance(records, list):
         raise ValueError("The JSON file must contain a list of employees.")
 
-    inserted = 0
-    skipped = 0
-    imported_salary_total = Decimal("0.00")
+    inserted: int = 0
+    skipped: int = 0
+    imported_salary_total: Decimal = Decimal("0.00")
 
-    # All changes in this block commit together.
-    # Any error rolls back inserts and department changes in this batch.
+    # All changes commit together; an error rolls back the batch.
     with Session(engine) as session:
         with session.begin():
             for row_number, record in enumerate(records, start=1):
@@ -123,7 +130,7 @@ def import_employees(engine, json_file):
 
                 department_name = employee_data.pop("department_name")
 
-                department = session.scalar(
+                department: Department | None = session.scalar(
                     select(Department).where(
                         Department.name.ilike(department_name)
                     )
@@ -153,13 +160,14 @@ def import_employees(engine, json_file):
     print(f"Imported salary total: {imported_salary_total:.2f}")
 
 
-def main():
-    engine = None
+def main() -> None:
+    """Run the JSON import and handle file, validation, and cleanup errors."""
+    engine: Engine | None = None
 
     try:
-        # engine = create_engine(get_database_url(), pool_pre_ping=True)
-        # import_employees(engine, JSON_FILE)
-        json_file = Path(sys.argv[1]) if len(sys.argv) > 1 else JSON_FILE
+        json_file: Path = (
+            Path(sys.argv[1]) if len(sys.argv) > 1 else JSON_FILE
+        )
 
         engine = create_engine(get_database_url(), pool_pre_ping=True)
         import_employees(engine, json_file)
