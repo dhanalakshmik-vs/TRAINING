@@ -1,12 +1,12 @@
+"""Connect to PostgreSQL and create the ORM tables."""
 
 from getpass import getpass
-
 from sqlalchemy import URL, create_engine, text
+from models_orm import Base
 
-from models_orm import Category, Expense
 
-
-def main():
+def main()-> None:
+    """Connect to the database and create missing ORM tables."""
     password = getpass("Enter PostgreSQL password: ")
 
     database_url = URL.create(
