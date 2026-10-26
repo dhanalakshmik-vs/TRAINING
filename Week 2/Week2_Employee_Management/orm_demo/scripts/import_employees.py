@@ -10,7 +10,7 @@ from pathlib import Path
 from sqlalchemy import URL, create_engine, select
 from sqlalchemy.orm import Session
 
-from models import Department, Employee
+from employee_management.models import Department, Employee
 
 
 JSON_FILE = Path(__file__).resolve().parent.parent / "employee.json"

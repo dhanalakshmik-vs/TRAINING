@@ -9,8 +9,8 @@ from sqlalchemy import URL, create_engine, select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
 
-from logging_config import setup_logging
-from models import Department, Employee
+from employee_management.logging_config import setup_logging
+from employee_management.models import Department, Employee
 
 logger = logging.getLogger(__name__)
 

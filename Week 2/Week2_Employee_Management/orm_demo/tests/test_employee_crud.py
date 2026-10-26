@@ -9,8 +9,8 @@ from contextlib import redirect_stdout
 from sqlalchemy import URL, create_engine, select
 from sqlalchemy.orm import Session
 
-import main
-from models import Base, Department, Employee
+from employee_management import main
+from employee_management.models import Base, Department, Employee
 
 
 class TestEmployeeCRUD(unittest.TestCase):
@@ -30,7 +30,7 @@ class TestEmployeeCRUD(unittest.TestCase):
             password=password,
             host="localhost",
             port=5432,
-            database="employee_orm_migration_test",
+            database="employee_orm_demo",
         )
 
         cls.engine = create_engine(url)

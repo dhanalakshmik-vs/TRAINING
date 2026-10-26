@@ -4,7 +4,7 @@ from getpass import getpass
 from sqlalchemy import URL, create_engine
 from sqlalchemy.orm import Session
 
-from models import Department, Employee
+from employee_management.models import Department, Employee
 
 
 def main():

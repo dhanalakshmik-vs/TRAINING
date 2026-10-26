@@ -1,18 +1,16 @@
-# Python virtual environments
-.venv/
-venv/
-env/
 
 # Python virtual environments
 .venv/
 venv/
 env/
+.emmployee_venv/
+.employee_venv/
 
 # Python cache files
 __pycache__/
 *.py[cod]
 
-# Secrets
+# Secrets and environment variables
 .env
 .env.*
 !.env.example
@@ -24,6 +22,11 @@ __pycache__/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Build and packaging artifacts
+build/
+dist/
+*.egg-info/
 
 # IDE settings
 .vscode/

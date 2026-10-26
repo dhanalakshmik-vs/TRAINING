@@ -3,7 +3,7 @@ from getpass import getpass
 
 from sqlalchemy import URL, create_engine, text
 
-from models import Base
+from employee_management.models import Base
 
 
 def main():

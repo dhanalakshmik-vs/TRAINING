@@ -7,8 +7,7 @@ from sqlalchemy import URL, create_engine, select, func, text, event
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
-from models import Base, Department, Employee
-
+from employee_management.models import Base, Department, Employee
 
 class TestEmployeeAdvanced(unittest.TestCase):
 
@@ -27,7 +26,7 @@ class TestEmployeeAdvanced(unittest.TestCase):
             password=password,
             host="localhost",
             port=5432,
-            database="employee_orm_migration_test",
+            database="employee_orm_demo",
         )
 
         cls.engine = create_engine(url)
